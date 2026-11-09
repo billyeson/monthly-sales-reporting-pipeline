@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sales Dashboard - June 2026</title>
+<style>
+:root{color-scheme:light;--surface:#fcfcfb;--card:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#8a8982;--grid:#e6e5e0;--s1:#2a78d6;--s1d:#1c5aa6}
+*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 40px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--ink2);margin:0 0 20px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid var(--grid);border-radius:8px;padding:12px 14px}
+.kpi .v{font-size:24px;font-weight:700}.kpi .l{color:var(--ink2);font-size:12px;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--grid);border-radius:8px;padding:16px 18px}
+.card.full{grid-column:1/-1}.card h2{font-size:15px;margin:0 0 2px}.card .d{color:var(--ink2);font-size:12px;margin:0 0 8px}
+svg{display:block;width:100%;height:auto;overflow:visible}svg text{font-family:Arial,Helvetica,sans-serif;fill:var(--ink2);font-size:12px}
+#c_cust svg{max-width:560px}
+svg text.val{fill:var(--ink);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 10px;border-bottom:1px solid var(--grid);text-align:right}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2),th:nth-child(3),td:nth-child(3){text-align:left}
+th{cursor:pointer;user-select:none;color:var(--ink2);font-weight:700;white-space:nowrap}th:hover,th:focus{color:var(--ink);outline:none;text-decoration:underline}
+#tip{position:fixed;pointer-events:none;background:#0b0b0b;color:#fff;font-size:12px;padding:6px 9px;border-radius:6px;opacity:0;transition:opacity .08s;z-index:9;white-space:nowrap}
+.note{margin-top:18px;color:var(--ink2);font-size:12px;border-top:1px solid var(--grid);padding-top:10px}
+@media(max-width:800px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+.back{display:inline-block;margin:0 0 14px;font-size:13px;color:var(--s1d);text-decoration:none}.back:hover,.back:focus{text-decoration:underline}
+.grid>*,.card{min-width:0}#tbl{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}#tbl table{min-width:640px}
+@media(max-width:480px){.wrap{padding:18px 12px 28px}h1{font-size:20px}.kpi .v{font-size:20px}.card{padding:12px}}
+</style></head><body><div class="wrap">
+<a class="back" href="index.html">&larr; Back to all reports</a>
+<h1>Sales Dashboard - June 2026</h1>
+<p class="sub">120 orders across 5 products (5 more catalogue products had no sales). Figures from sales_june_2026.csv and inventory_costs_june_2026.csv.</p>
+<div class="kpis" id="kpis"></div>
+<div class="grid">
+<div class="card"><h2>Revenue by category</h2><p class="d">Revenue and share of total</p><div id="c_cat"></div></div>
+<div class="card"><h2>Weekly revenue</h2><p class="d">Weeks 1-4 (no orders on June 29-30)</p><div id="c_wk"></div></div>
+<div class="card"><h2>Revenue by product</h2><p class="d">Total revenue, highest first</p><div id="c_prod"></div></div>
+<div class="card"><h2>Estimated margin % by product</h2><p class="d">Est. gross profit / revenue (estimate)</p><div id="c_mar"></div></div>
+<div class="card full"><h2>Top customers by revenue</h2><p class="d">All 10 customers, highest first</p><div id="c_cust"></div></div>
+<div class="card full"><h2>Product table</h2><p class="d">Click a column header to sort</p><div id="tbl"></div></div>
+</div>
+<p class="note">* Cost, gross profit and margin are estimates: the sales data has no quantity column, so cost assumes one unit per order (Unit Cost x orders). Chart table view: see the product table above.</p>
+</div><div id="tip"></div>
+<script>
+const SUMMARY=[{"Level": "Overall", "Name": "All orders", "Orders": 120, "Revenue": 505449, "Avg_Order_Value": 4212.08, "Revenue_Share_Pct": 100.0, "Est_Cost": 162800, "Est_Margin": 342649, "Est_Margin_Pct": 67.79, "Rank_In_Level": 1}, {"Level": "Category", "Name": "Footwear", "Orders": 80, "Revenue": 341898, "Avg_Order_Value": 4273.73, "Revenue_Share_Pct": 67.64, "Est_Cost": 130550, "Est_Margin": 211348, "Est_Margin_Pct": 61.82, "Rank_In_Level": 1}, {"Level": "Category", "Name": "Apparel", "Orders": 23, "Revenue": 95831, "Avg_Order_Value": 4166.57, "Revenue_Share_Pct": 18.96, "Est_Cost": 16100, "Est_Margin": 79731, "Est_Margin_Pct": 83.2, "Rank_In_Level": 2}, {"Level": "Category", "Name": "Accessories", "Orders": 17, "Revenue": 67720, "Avg_Order_Value": 3983.53, "Revenue_Share_Pct": 13.4, "Est_Cost": 16150, "Est_Margin": 51570, "Est_Margin_Pct": 76.15, "Rank_In_Level": 3}, {"Level": "Product", "Name": "Casual Shoes", "Orders": 35, "Revenue": 139147, "Avg_Order_Value": 3975.63, "Revenue_Share_Pct": 27.53, "Est_Cost": 50750, "Est_Margin": 88397, "Est_Margin_Pct": 63.53, "Rank_In_Level": 1}, {"Level": "Product", "Name": "Running Shoes", "Orders": 26, "Revenue": 111329, "Avg_Order_Value": 4281.88, "Revenue_Share_Pct": 22.03, "Est_Cost": 49400, "Est_Margin": 61929, "Est_Margin_Pct": 55.63, "Rank_In_Level": 2}, {"Level": "Product", "Name": "Cotton T-Shirt", "Orders": 23, "Revenue": 95831, "Avg_Order_Value": 4166.57, "Revenue_Share_Pct": 18.96, "Est_Cost": 16100, "Est_Margin": 79731, "Est_Margin_Pct": 83.2, "Rank_In_Level": 3}, {"Level": "Product", "Name": "Formal Shoes", "Orders": 19, "Revenue": 91422, "Avg_Order_Value": 4811.68, "Revenue_Share_Pct": 18.09, "Est_Cost": 30400, "Est_Margin": 61022, "Est_Margin_Pct": 66.75, "Rank_In_Level": 4}, {"Level": "Product", "Name": "Travel Bag", "Orders": 17, "Revenue": 67720, "Avg_Order_Value": 3983.53, "Revenue_Share_Pct": 13.4, "Est_Cost": 16150, "Est_Margin": 51570, "Est_Margin_Pct": 76.15, "Rank_In_Level": 5}, {"Level": "Customer", "Name": "Ravi Mehta", "Orders": 18, "Revenue": 70664, "Avg_Order_Value": 3925.78, "Revenue_Share_Pct": 13.98, "Est_Cost": 23250, "Est_Margin": 47414, "Est_Margin_Pct": 67.1, "Rank_In_Level": 1}, {"Level": "Customer", "Name": "Priya M", "Orders": 15, "Revenue": 66620, "Avg_Order_Value": 4441.33, "Revenue_Share_Pct": 13.18, "Est_Cost": 22500, "Est_Margin": 44120, "Est_Margin_Pct": 66.23, "Rank_In_Level": 2}, {"Level": "Customer", "Name": "Meera K", "Orders": 14, "Revenue": 58200, "Avg_Order_Value": 4157.14, "Revenue_Share_Pct": 11.51, "Est_Cost": 20350, "Est_Margin": 37850, "Est_Margin_Pct": 65.03, "Rank_In_Level": 3}, {"Level": "Customer", "Name": "Sneha P", "Orders": 12, "Revenue": 52578, "Avg_Order_Value": 4381.5, "Revenue_Share_Pct": 10.4, "Est_Cost": 14700, "Est_Margin": 37878, "Est_Margin_Pct": 72.04, "Rank_In_Level": 4}, {"Level": "Customer", "Name": "John Smith", "Orders": 11, "Revenue": 48947, "Avg_Order_Value": 4449.73, "Revenue_Share_Pct": 9.68, "Est_Cost": 13600, "Est_Margin": 35347, "Est_Margin_Pct": 72.21, "Rank_In_Level": 5}, {"Level": "Customer", "Name": "Arjun R", "Orders": 10, "Revenue": 46849, "Avg_Order_Value": 4684.9, "Revenue_Share_Pct": 9.27, "Est_Cost": 14850, "Est_Margin": 31999, "Est_Margin_Pct": 68.3, "Rank_In_Level": 6}, {"Level": "Customer", "Name": "Aman P", "Orders": 12, "Revenue": 46065, "Avg_Order_Value": 3838.75, "Revenue_Share_Pct": 9.11, "Est_Cost": 17850, "Est_Margin": 28215, "Est_Margin_Pct": 61.25, "Rank_In_Level": 7}, {"Level": "Customer", "Name": "Neha Sharma", "Orders": 10, "Revenue": 45204, "Avg_Order_Value": 4520.4, "Revenue_Share_Pct": 8.94, "Est_Cost": 14750, "Est_Margin": 30454, "Est_Margin_Pct": 67.37, "Rank_In_Level": 8}, {"Level": "Customer", "Name": "Jane Smith", "Orders": 11, "Revenue": 42788, "Avg_Order_Value": 3889.82, "Revenue_Share_Pct": 8.47, "Est_Cost": 11250, "Est_Margin": 31538, "Est_Margin_Pct": 73.71, "Rank_In_Level": 9}, {"Level": "Customer", "Name": "Rahul K", "Orders": 7, "Revenue": 27534, "Avg_Order_Value": 3933.43, "Revenue_Share_Pct": 5.45, "Est_Cost": 9700, "Est_Margin": 17834, "Est_Margin_Pct": 64.77, "Rank_In_Level": 10}, {"Level": "Week", "Name": "Week 1 (Jun 1-7)", "Orders": 35, "Revenue": 132073, "Avg_Order_Value": 3773.51, "Revenue_Share_Pct": 26.13, "Est_Cost": 44750, "Est_Margin": 87323, "Est_Margin_Pct": 66.12, "Rank_In_Level": 2}, {"Level": "Week", "Name": "Week 2 (Jun 8-14)", "Orders": 29, "Revenue": 121080, "Avg_Order_Value": 4175.17, "Revenue_Share_Pct": 23.95, "Est_Cost": 39650, "Est_Margin": 81430, "Est_Margin_Pct": 67.25, "Rank_In_Level": 3}, {"Level": "Week", "Name": "Week 3 (Jun 15-21)", "Orders": 28, "Revenue": 119954, "Avg_Order_Value": 4284.07, "Revenue_Share_Pct": 23.73, "Est_Cost": 38050, "Est_Margin": 81904, "Est_Margin_Pct": 68.28, "Rank_In_Level": 4}, {"Level": "Week", "Name": "Week 4 (Jun 22-28)", "Orders": 28, "Revenue": 132342, "Avg_Order_Value": 4726.5, "Revenue_Share_Pct": 26.18, "Est_Cost": 40350, "Est_Margin": 91992, "Est_Margin_Pct": 69.51, "Rank_In_Level": 1}];
+const PRODS=[{"sku": "BAG-001", "name": "Travel Bag", "cat": "Accessories", "unit": 950, "orders": 17, "rev": 67720, "cost": 16150, "gp": 51570, "mp": 76.15}, {"sku": "SHOE-001", "name": "Running Shoes", "cat": "Footwear", "unit": 1900, "orders": 26, "rev": 111329, "cost": 49400, "gp": 61929, "mp": 55.63}, {"sku": "SHOE-002", "name": "Casual Shoes", "cat": "Footwear", "unit": 1450, "orders": 35, "rev": 139147, "cost": 50750, "gp": 88397, "mp": 63.53}, {"sku": "SHOE-003", "name": "Formal Shoes", "cat": "Footwear", "unit": 1600, "orders": 19, "rev": 91422, "cost": 30400, "gp": 61022, "mp": 66.75}, {"sku": "TSHIRT-001", "name": "Cotton T-Shirt", "cat": "Apparel", "unit": 700, "orders": 23, "rev": 95831, "cost": 16100, "gp": 79731, "mp": 83.2}];
+const by=l=>SUMMARY.filter(r=>r.Level===l);
+const O=by('Overall')[0];
+const fmt=n=>n.toLocaleString('en-US',{maximumFractionDigits:0}),f2=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+document.getElementById('kpis').innerHTML=[['Orders',fmt(O.Orders)],['Revenue',fmt(O.Revenue)],['Est. cost*',fmt(O.Est_Cost)],['Est. gross profit*',fmt(O.Est_Margin)],['Est. margin %*',f2(O.Est_Margin_Pct)+'%'],['Avg order value',f2(O.Avg_Order_Value)]].map(k=>`<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]}</div></div>`).join('');
+const tip=document.getElementById('tip');
+function showTip(e,h){tip.innerHTML=h;tip.style.opacity=1;tip.style.left=Math.min(e.clientX+12,innerWidth-230)+'px';tip.style.top=(e.clientY+12)+'px'}
+function hideTip(){tip.style.opacity=0}
+const NS='http://www.w3.org/2000/svg';
+function hbar(id,rows,valFn,labFn,tipFn,opt={}){
+  const W=480,lw=opt.lw||110,rw=opt.rw||90,rh=26,gap=8,H=rows.length*(rh+gap);
+  const mx=Math.max(...rows.map(valFn));let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opt.aria||''}">`;
+  rows.forEach((r,i)=>{const y=i*(rh+gap),w=Math.max(2,(W-lw-rw)*valFn(r)/mx);
+    s+=`<g data-i="${i}"><rect x="0" y="${y}" width="${W}" height="${rh+gap}" fill="transparent"/>
+    <text x="${lw-8}" y="${y+rh/2+4}" text-anchor="end">${r.Name}</text>
+    <path d="M${lw},${y} h${w-4} a4,4 0 0 1 4,4 v${rh-8} a4,4 0 0 1 -4,4 h${-(w-4)} z" fill="var(--s1)"/>
+    <text class="val" x="${lw+w+6}" y="${y+rh/2+4}">${labFn(r)}</text></g>`});
+  s+='</svg>';const el=document.getElementById(id);el.innerHTML=s;
+  el.querySelectorAll('g').forEach(g=>{const r=rows[+g.dataset.i];g.addEventListener('mousemove',e=>showTip(e,tipFn(r)));g.addEventListener('mouseleave',hideTip)});
+}
+const T=(r)=>`<b>${r.Name}</b><br>Orders: ${fmt(r.Orders)}<br>Revenue: ${fmt(r.Revenue)} (${f2(r.Revenue_Share_Pct)}%)<br>Est. cost: ${fmt(r.Est_Cost)}<br>Est. margin: ${f2(r.Est_Margin_Pct)}%`;
+hbar('c_cat',by('Category'),r=>r.Revenue,r=>fmt(r.Revenue)+' ('+f2(r.Revenue_Share_Pct)+'%)',T,{aria:'Revenue by category',rw:130});
+hbar('c_prod',by('Product'),r=>r.Revenue,r=>fmt(r.Revenue),T,{aria:'Revenue by product'});
+hbar('c_mar',[...by('Product')].sort((a,b)=>b.Est_Margin_Pct-a.Est_Margin_Pct),r=>r.Est_Margin_Pct,r=>f2(r.Est_Margin_Pct)+'%',T,{aria:'Estimated margin percent by product'});
+hbar('c_cust',by('Customer'),r=>r.Revenue,r=>fmt(r.Revenue)+' ('+f2(r.Revenue_Share_Pct)+'%)',r=>`<b>${r.Name}</b><br>Orders: ${r.Orders}<br>Revenue: ${fmt(r.Revenue)}<br>Avg order: ${f2(r.Avg_Order_Value)}`,{aria:'Revenue by customer',rw:140});
+// weekly line
+(function(){const rows=by('Week'),W=480,H=230,L=14,R=14,Tp=30,B=44,pw=W-L-R,ph=H-Tp-B;
+  const lo=0,hi=Math.max(...rows.map(r=>r.Revenue))*1.15;const x=i=>L+pw*(i+.5)/rows.length,y=v=>Tp+ph*(1-(v-lo)/(hi-lo));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Weekly revenue"><line x1="${L}" x2="${W-R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--grid)"/>`;
+  s+=`<polyline fill="none" stroke="var(--s1)" stroke-width="2" points="${rows.map((r,i)=>x(i)+','+y(r.Revenue)).join(' ')}"/>`;
+  rows.forEach((r,i)=>{s+=`<circle cx="${x(i)}" cy="${y(r.Revenue)}" r="4.5" fill="var(--s1)" stroke="#fff" stroke-width="2"/><text class="val" x="${x(i)}" y="${y(r.Revenue)-12}" text-anchor="middle">${fmt(r.Revenue)}</text>
+   <text x="${x(i)}" y="${H-22}" text-anchor="middle">${r.Name.split(' (')[0]}</text><text x="${x(i)}" y="${H-8}" text-anchor="middle" style="font-size:11px">${r.Name.split(' (')[1].replace(')','')}</text>`});
+  s+=`<line id="xh" y1="${Tp}" y2="${y(0)}" stroke="var(--muted)" stroke-dasharray="3 3" opacity="0"/><rect id="hit" x="${L}" y="0" width="${pw}" height="${H-B+10}" fill="transparent"/></svg>`;
+  const el=document.getElementById('c_wk');el.innerHTML=s;const xh=el.querySelector('#xh'),hit=el.querySelector('#hit'),svg=el.querySelector('svg');
+  hit.addEventListener('mousemove',e=>{const b=svg.getBoundingClientRect(),px=(e.clientX-b.left)*W/b.width;let i=Math.min(rows.length-1,Math.max(0,Math.floor((px-L)/(pw/rows.length))));
+    xh.setAttribute('x1',x(i));xh.setAttribute('x2',x(i));xh.setAttribute('opacity',1);const r=rows[i];showTip(e,`<b>${r.Name}</b><br>Orders: ${r.Orders}<br>Revenue: ${fmt(r.Revenue)} (${f2(r.Revenue_Share_Pct)}%)<br>Est. margin: ${f2(r.Est_Margin_Pct)}%`)});
+  hit.addEventListener('mouseleave',()=>{xh.setAttribute('opacity',0);hideTip()});})();
+// sortable table
+(function(){const cols=[['SKU','sku'],['Product','name'],['Category','cat'],['Unit cost','unit'],['Orders','orders'],['Revenue','rev'],['Est. cost*','cost'],['Est. gross profit*','gp'],['Est. margin %*','mp']];
+  let rows=PRODS.slice(),key='rev',dir=-1;
+  function draw(){rows.sort((a,b)=>(typeof a[key]==='string'?a[key].localeCompare(b[key]):a[key]-b[key])*dir);
+    document.getElementById('tbl').innerHTML='<table><thead><tr>'+cols.map(c=>`<th tabindex="0" data-k="${c[1]}">${c[0]}${c[1]===key?(dir<0?' ▼':' ▲'):''}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>`<tr><td>${r.sku}</td><td>${r.name}</td><td>${r.cat}</td><td>${fmt(r.unit)}</td><td>${fmt(r.orders)}</td><td>${fmt(r.rev)}</td><td>${fmt(r.cost)}</td><td>${fmt(r.gp)}</td><td>${f2(r.mp)}%</td></tr>`).join('')+'</tbody></table>';
+    document.querySelectorAll('th').forEach(h=>{const go=()=>{const k=h.dataset.k;if(k===key)dir=-dir;else{key=k;dir=(typeof rows[0][k]==='string')?1:-1}draw()};h.onclick=go;h.onkeydown=e=>{if(e.key==='Enter')go()}})}
+  draw()})();
+</script></body></html>

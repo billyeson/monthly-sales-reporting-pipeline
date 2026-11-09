@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Sales Dashboard - May 2026</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#f4f4f2;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#767570;--grid:#e6e5e1;--s1:#2a78d6;--s2:#1baf7a;--bd:#dddcd6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:14px}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 20px 32px}
+h1{font-size:22px;margin:0 0 2px}.sub{color:var(--ink2);margin:0 0 18px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi,.card{background:var(--surface);border:1px solid var(--bd);border-radius:8px}
+.kpi{padding:12px 14px}.kpi .l{color:var(--ink2);font-size:12px}.kpi .v{font-size:24px;font-weight:700;margin-top:4px}.kpi .n{color:var(--muted);font-size:11px;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{padding:14px 16px}.card h2{font-size:15px;margin:0}.card p{margin:2px 0 8px;color:var(--ink2);font-size:12px}
+.full{grid-column:1/-1}svg{width:100%;height:auto;display:block;overflow:visible}
+svg text{font-family:Arial,Helvetica,sans-serif;fill:var(--ink2);font-size:12px}svg .val{fill:var(--ink);font-weight:700}
+table{width:100%;border-collapse:collapse}th,td{white-space:nowrap;padding:7px 10px;text-align:right;border-bottom:1px solid var(--grid)}th:first-child,td:first-child{text-align:left}
+th{cursor:pointer;color:var(--ink2);font-size:12px;user-select:none;white-space:nowrap}th:hover{color:var(--ink)}
+.foot{margin-top:16px;color:var(--ink2);font-size:12px;line-height:1.5}
+#tip{position:fixed;pointer-events:none;background:#0b0b0b;color:#fff;padding:6px 9px;border-radius:5px;font-size:12px;display:none;z-index:9;line-height:1.4}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}}
+.back{display:inline-block;margin:0 0 14px;font-size:13px;color:var(--s1d);text-decoration:none}.back:hover,.back:focus{text-decoration:underline}
+.grid>*,.card{min-width:0}#tbl{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}#tbl table{min-width:640px}
+@media(max-width:480px){.wrap{padding:18px 12px 28px}h1{font-size:20px}.kpi .v{font-size:20px}.card{padding:12px}}
+</style></head><body><div class="wrap">
+<a class="back" href="index.html">&larr; Back to all reports</a>
+<h1>Sales Dashboard - May 2026</h1>
+<p class="sub">120 orders, May 1-28, 2026. Figures from sales_may_2026.csv and inventory_costs_may_2026.csv.</p>
+<div class="kpis" id="kpis"></div>
+<div class="grid">
+<div class="card"><h2>Revenue by category</h2><p>Share of total revenue shown beside each value</p><div id="c1"></div></div>
+<div class="card"><h2>Weekly revenue</h2><p>Revenue per week of May</p><div id="c4"></div></div>
+<div class="card"><h2>Revenue by product</h2><p>Total revenue per product</p><div id="c2"></div></div>
+<div class="card"><h2>Estimated margin % by product</h2><p>Estimated gross margin as a % of revenue</p><div id="c2b"></div></div>
+<div class="card"><h2>Top customers by revenue</h2><p>All 10 customers, highest first</p><div id="c3"></div></div>
+<div class="card"><h2>Products</h2><p>Click a column header to sort</p><div id="tbl"></div></div>
+</div>
+<p class="foot"><b>Note: cost and margin are estimates.</b> The sales data has no quantity column, so estimated cost assumes one unit per order (unit cost summed over orders). Revenue figures are actual; cost, gross profit and margin % are estimated.</p>
+</div><div id="tip"></div>
+<script>
+const D={"overall": [{"name": "All orders", "orders": 120, "rev": 521616, "aov": 4346.8, "share": 100.0, "cost": 161600, "margin": 360016, "mpct": 69.02}], "category": [{"name": "Footwear", "orders": 80, "rev": 346852, "aov": 4335.65, "share": 66.5, "cost": 129400, "margin": 217452, "mpct": 62.69}, {"name": "Apparel", "orders": 19, "rev": 91009, "aov": 4789.95, "share": 17.45, "cost": 13300, "margin": 77709, "mpct": 85.39}, {"name": "Accessories", "orders": 21, "rev": 83755, "aov": 3988.33, "share": 16.06, "cost": 18900, "margin": 64855, "mpct": 77.43}], "product": [{"name": "Running Shoes", "orders": 36, "rev": 159377, "aov": 4427.14, "share": 30.55, "cost": 64800, "margin": 94577, "mpct": 59.34}, {"name": "Casual Shoes", "orders": 29, "rev": 128559, "aov": 4433.07, "share": 24.65, "cost": 40600, "margin": 87959, "mpct": 68.42}, {"name": "Cotton T-Shirt", "orders": 19, "rev": 91009, "aov": 4789.95, "share": 17.45, "cost": 13300, "margin": 77709, "mpct": 85.39}, {"name": "Travel Bag", "orders": 21, "rev": 83755, "aov": 3988.33, "share": 16.06, "cost": 18900, "margin": 64855, "mpct": 77.43}, {"name": "Formal Shoes", "orders": 15, "rev": 58916, "aov": 3927.73, "share": 11.29, "cost": 24000, "margin": 34916, "mpct": 59.26}], "customer": [{"name": "Jane Smith", "orders": 16, "rev": 71705, "aov": 4481.56, "share": 13.75, "cost": 20200, "margin": 51505, "mpct": 71.83}, {"name": "Priya M", "orders": 15, "rev": 62441, "aov": 4162.73, "share": 11.97, "cost": 17400, "margin": 45041, "mpct": 72.13}, {"name": "Arjun R", "orders": 15, "rev": 58691, "aov": 3912.73, "share": 11.25, "cost": 21900, "margin": 36791, "mpct": 62.69}, {"name": "Ravi Mehta", "orders": 11, "rev": 55065, "aov": 5005.91, "share": 10.56, "cost": 15200, "margin": 39865, "mpct": 72.4}, {"name": "John Smith", "orders": 15, "rev": 55040, "aov": 3669.33, "share": 10.55, "cost": 19600, "margin": 35440, "mpct": 64.39}, {"name": "Rahul K", "orders": 10, "rev": 48921, "aov": 4892.1, "share": 9.38, "cost": 12000, "margin": 36921, "mpct": 75.47}, {"name": "Meera K", "orders": 11, "rev": 48319, "aov": 4392.64, "share": 9.26, "cost": 15900, "margin": 32419, "mpct": 67.09}, {"name": "Sneha P", "orders": 9, "rev": 41747, "aov": 4638.56, "share": 8.0, "cost": 12300, "margin": 29447, "mpct": 70.54}, {"name": "Aman P", "orders": 9, "rev": 40420, "aov": 4491.11, "share": 7.75, "cost": 13300, "margin": 27120, "mpct": 67.1}, {"name": "Neha Sharma", "orders": 9, "rev": 39267, "aov": 4363.0, "share": 7.53, "cost": 13800, "margin": 25467, "mpct": 64.86}], "week": [{"name": "Week 1 (May 1-7)", "orders": 35, "rev": 152100, "aov": 4345.71, "share": 29.16, "cost": 48200, "margin": 103900, "mpct": 68.31}, {"name": "Week 2 (May 8-14)", "orders": 29, "rev": 122371, "aov": 4219.69, "share": 23.46, "cost": 41300, "margin": 81071, "mpct": 66.25}, {"name": "Week 3 (May 15-21)", "orders": 28, "rev": 125820, "aov": 4493.57, "share": 24.12, "cost": 36100, "margin": 89720, "mpct": 71.31}, {"name": "Week 4 (May 22-28)", "orders": 28, "rev": 121325, "aov": 4333.04, "share": 23.26, "cost": 36000, "margin": 85325, "mpct": 70.33}]};
+const f0=n=>n.toLocaleString('en-US'),f2=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const o=D.overall[0];
+const K=[['Orders',f0(o.orders),''],['Revenue',f0(o.rev),''],['Est. cost',f0(o.cost),'one unit per order'],['Est. gross profit',f0(o.margin),'revenue - est. cost'],['Est. margin',f2(o.mpct)+'%','estimated'],['Avg order value',f2(o.aov),'']];
+document.getElementById('kpis').innerHTML=K.map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="n">${k[2]||'&nbsp;'}</div></div>`).join('');
+const tip=document.getElementById('tip');
+function showTip(e,h){tip.innerHTML=h;tip.style.display='block';tip.style.left=Math.min(e.clientX+12,innerWidth-200)+'px';tip.style.top=(e.clientY+12)+'px'}
+function hide(){tip.style.display='none'}
+function hbar(id,rows,val,fmt,color,tipf,extra){
+  const W=520,rh=34,L=110,R=110,H=rows.length*rh+4,mx=Math.max(...rows.map(val));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  rows.forEach((r,i)=>{const y=i*rh+4,w=(W-L-R)*val(r)/mx;
+    s+=`<g class="b" data-i="${i}"><rect x="0" y="${y-2}" width="${W}" height="${rh-2}" fill="transparent"/>
+    <text x="${L-8}" y="${y+14}" text-anchor="end">${r.name}</text>
+    <rect x="${L}" y="${y}" width="${w}" height="20" rx="0" fill="${color}"/>
+    <text class="val" x="${L+w+6}" y="${y+14}">${fmt(val(r))}${extra?'  <tspan style="fill:#767570;font-weight:400">'+extra(r)+'</tspan>':''}</text></g>`});
+  const el=document.getElementById(id);el.innerHTML=s+'</svg>';
+  el.querySelectorAll('.b').forEach(g=>{const r=rows[g.dataset.i];g.onmousemove=e=>showTip(e,tipf(r));g.onmouseleave=hide})}
+const tf=r=>`<b>${r.name}</b><br>Orders: ${r.orders}<br>Revenue: ${f0(r.rev)}<br>Share: ${f2(r.share)}%<br>Est. margin: ${f2(r.mpct)}%`;
+hbar('c1',D.category,r=>r.rev,f0,'var(--s1)',tf,r=>f2(r.share)+'%');
+hbar('c2',D.product,r=>r.rev,f0,'var(--s1)',tf);
+hbar('c2b',D.product,r=>r.mpct,v=>f2(v)+'%','var(--s2)',tf);
+hbar('c3',D.customer,r=>r.rev,f0,'var(--s1)',tf);
+// weekly column chart
+(function(){const W=520,H=250,L=48,B=44,T=18,w=D.week,mx=Math.ceil(Math.max(...w.map(r=>r.rev))/50000)*50000,ph=H-B-T,bw=(W-L)/w.length;
+ let s=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+ for(let t=0;t<=mx;t+=50000){const y=T+ph-ph*t/mx;s+=`<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="#e6e5e1"/><text x="${L-6}" y="${y+4}" text-anchor="end">${t/1000}k</text>`}
+ const pts=w.map((r,i)=>[L+bw*(i+.5),T+ph-ph*r.rev/mx]);
+ s+=`<polyline fill="none" stroke="#2a78d6" stroke-width="2" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+ w.forEach((r,i)=>{const[x,y]=pts[i];s+=`<g class="p" data-i="${i}"><rect x="${x-bw/2}" y="${T}" width="${bw}" height="${ph+B}" fill="transparent"/><circle cx="${x}" cy="${y}" r="5" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"/><text class="val" x="${x}" y="${y-10}" text-anchor="middle">${f0(r.rev)}</text><text x="${x}" y="${H-24}" text-anchor="middle">${r.name.split(' (')[0]}</text><text x="${x}" y="${H-9}" text-anchor="middle" style="fill:#767570">${r.name.split('(')[1].replace(')','')}</text></g>`});
+ const el=document.getElementById('c4');el.innerHTML=s+'</svg>';
+ el.querySelectorAll('.p').forEach(g=>{const r=w[g.dataset.i];g.onmousemove=e=>showTip(e,`<b>${r.name}</b><br>Orders: ${r.orders}<br>Revenue: ${f0(r.rev)}<br>Avg order: ${f2(r.aov)}<br>Est. margin: ${f2(r.mpct)}%`);g.onmouseleave=hide})})();
+// sortable table
+let rows=D.product.slice(),key='rev',dir=-1;
+const cols=[['name','Product'],['orders','Orders'],['rev','Revenue'],['aov','Avg order'],['cost','Est. cost'],['margin','Est. profit'],['mpct','Est. margin %']];
+function draw(){document.getElementById('tbl').innerHTML='<table><thead><tr>'+cols.map(c=>`<th data-k="${c[0]}">${c[1]}${c[0]==key?(dir>0?' ▲':' ▼'):''}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${c[0]=='name'?r.name:c[0]=='aov'?f2(r.aov):c[0]=='mpct'?f2(r.mpct)+'%':f0(r[c[0]])}</td>`).join('')+'</tr>').join('')+'</tbody></table>';
+ document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;dir=k==key?-dir:(k=='name'?1:-1);key=k;rows.sort((a,b)=>(a[k]>b[k]?1:a[k]<b[k]?-1:0)*dir);draw()})}
+draw();
+</script></body></html>
