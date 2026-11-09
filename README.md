@@ -4,10 +4,9 @@ An AI-orchestrated data pipeline that turns two raw monthly CSV files (sales and
 
 The pipeline is defined as plain-language Markdown instruction files and run by [Claude Cowork](https://www.anthropic.com/claude) with specialised AI agents. This repository is a portfolio project in data engineering and AI workflow automation.
 
-**Live dashboards** (open locally after cloning):
-[May 2026](docs/dashboard_may_2026.html) | [June 2026](docs/dashboard_june_2026.html) | [landing page](docs/index.html)
+**Live dashboards:** [landing page](https://billyeson.github.io/monthly-sales-reporting-pipeline/) | [May 2026](https://billyeson.github.io/monthly-sales-reporting-pipeline/dashboard_may_2026.html) | [June 2026](https://billyeson.github.io/monthly-sales-reporting-pipeline/dashboard_june_2026.html)
 
-Once GitHub Pages is enabled for this repository, the same pages will be available at <https://billyeson.github.io/monthly-sales-reporting-pipeline/> (not live until Pages is turned on).
+The dashboards are served by GitHub Pages from the `docs/` folder; the same files can also be opened locally from `docs/` after cloning.
 
 | May 2026 dashboard | June 2026 dashboard |
 |---|---|
